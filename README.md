@@ -61,7 +61,7 @@ A aplicação será aberta automaticamente no navegador em `http://localhost:850
 
 1. **Login Admin**
    - Vá para "Login Admin" na área pública
-   - Digite a senha de administrador (padrão: `admin123`)
+   - Informe a senha configurada para o administrador
    - Acesse a área administrativa
 
 2. **Adicionar Template**
@@ -94,16 +94,6 @@ A aplicação será aberta automaticamente no navegador em `http://localhost:850
    - Preencha o formulário gerado automaticamente
    - Clique em "Gerar Documento"
    - Baixe sua cópia do documento
-
-### Configuração da Senha Admin
-
-Por padrão, a senha de administrador é `admin123`. Para alterar:
-
-1. Edite o arquivo `auth.py`
-2. Altere a variável `DEFAULT_ADMIN_PASSWORD`
-3. Ou defina a variável de ambiente `ADMIN_PASSWORD` antes de executar a aplicação
-
-**IMPORTANTE**: Em produção, sempre altere a senha padrão e use variáveis de ambiente para maior segurança!
 
 ## Criando Templates
 

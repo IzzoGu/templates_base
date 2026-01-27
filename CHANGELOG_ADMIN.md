@@ -4,7 +4,6 @@
 
 ### Sistema de Autenticação
 - Criado módulo `auth.py` com sistema de autenticação simples para administradores
-- Senha padrão: `admin123` (pode ser alterada via variável de ambiente `ADMIN_PASSWORD`)
 - Login/logout funcional com controle de sessão
 
 ### Área Administrativa
@@ -46,7 +45,7 @@
 ### Para Administradores
 1. Acesse a aplicação
 2. Vá para "Login Admin"
-3. Digite a senha (padrão: `admin123`)
+3. Informe a senha configurada para o administrador
 4. Acesse a área administrativa
 
 ### Para Usuários Públicos
