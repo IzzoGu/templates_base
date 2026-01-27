@@ -7,7 +7,20 @@ import mammoth
 from docxtpl import DocxTemplate
 import streamlit.components.v1 as components
 
-from auth import is_admin, login_admin, logout_admin, require_admin
+from auth import (
+    is_admin,
+    login_admin,
+    logout_admin,
+    require_admin,
+    set_admin_password,
+    check_admin_password,
+    login_user,
+    logout_user,
+    get_current_user,
+    create_user,
+    list_users,
+    is_user_logged_in,
+)
 from template_manager import (
     add_template, list_templates, get_template, delete_template,
     update_template_publication
@@ -32,6 +45,8 @@ if 'is_admin' not in st.session_state:
 
 def main():
     admin_logged = is_admin()
+    current_user = get_current_user()
+
     st.sidebar.title("Gerador de Documentos")
     if admin_logged:
         st.sidebar.success("Modo Administrador")
@@ -39,21 +54,41 @@ def main():
             logout_admin()
             st.rerun()
     else:
-        st.sidebar.info("Modo Público")
-    
+        if current_user:
+            st.sidebar.success(f"Usuário: {current_user}")
+            if st.sidebar.button("Sair usuário", type="secondary"):
+                logout_user()
+                st.rerun()
+        else:
+            st.sidebar.info("Modo Público")
+
     st.sidebar.markdown("---")
     
     if admin_logged:
         page = st.sidebar.radio(
             "Navegação Admin",
-            ["Dashboard Admin", "Adicionar Template", "Gerenciar Templates", 
-             "Documentos Gerados", "Limpar Base"]
+            [
+                "Dashboard Admin",
+                "Adicionar Template",
+                "Gerenciar Templates",
+                "Gerenciar Usuários",
+                "Documentos Gerados",
+                "Limpar Base",
+                "Configurações",
+            ],
         )
     else:
-        page = st.sidebar.radio(
-            "Navegação",
-            ["Início", "Templates Disponíveis", "Login Admin"]
-        )
+        # Usuário comum: se não estiver logado, só pode acessar telas de login
+        if is_user_logged_in():
+            page = st.sidebar.radio(
+                "Navegação",
+                ["Início", "Templates Disponíveis", "Login Usuário", "Login Admin"],
+            )
+        else:
+            page = st.sidebar.radio(
+                "Navegação",
+                ["Login Usuário", "Login Admin"],
+            )
     
     st.sidebar.markdown("---")
     st.sidebar.markdown("### Sobre")
@@ -78,17 +113,25 @@ def main():
         elif page == "Gerenciar Templates":
             require_admin()
             show_manage_templates_page()
+        elif page == "Gerenciar Usuários":
+            require_admin()
+            show_admin_users_page()
         elif page == "Documentos Gerados":
             require_admin()
             show_documents_page()
         elif page == "Limpar Base":
             require_admin()
             show_clear_base_page()
+        elif page == "Configurações":
+            require_admin()
+            show_admin_settings_page()
     else:
         if page == "Início":
             show_home_page()
         elif page == "Templates Disponíveis":
             show_public_templates_page()
+        elif page == "Login Usuário":
+            show_user_login_page()
         elif page == "Login Admin":
             show_login_page()
 
@@ -111,6 +154,21 @@ def show_login_page():
             st.rerun()
         else:
             st.error("Senha incorreta. Tente novamente.")
+
+
+def show_user_login_page():
+    st.title("Login de Usuário")
+    st.markdown("---")
+
+    username = st.text_input("Usuário")
+    password = st.text_input("Senha", type="password")
+
+    if st.button("Entrar", type="primary"):
+        if login_user(username, password):
+            st.success("Login realizado com sucesso.")
+            st.rerun()
+        else:
+            st.error("Usuário ou senha inválidos.")
 
 
 def show_home_page():
@@ -150,7 +208,11 @@ def show_home_page():
 def show_public_templates_page():
     st.title("Templates Disponíveis")
     st.markdown("---")
-    
+
+    if not is_user_logged_in():
+        st.info("Para utilizar os templates, faça login como usuário na opção 'Login Usuário'.")
+        return
+
     templates = list_templates(only_published=True)
     
     if not templates:
@@ -471,7 +533,6 @@ def show_documents_page():
 
 
 def show_clear_base_page():
-    """Página para limpar toda a base de dados (admin)."""
     require_admin()
     
     st.title("Limpar Base de Dados")
@@ -548,6 +609,86 @@ def show_clear_base_page():
         except Exception as e:
             st.error(f"Erro ao limpar base de dados: {str(e)}")
 
+
+def show_admin_settings_page():
+    st.title("Configurações da Área Administrativa")
+    st.markdown("---")
+
+    st.subheader("Alterar senha do administrador")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        current_password = st.text_input(
+            "Senha atual",
+            type="password",
+        )
+        new_password = st.text_input(
+            "Nova senha",
+            type="password",
+        )
+        confirm_password = st.text_input(
+            "Confirmar nova senha",
+            type="password",
+        )
+
+        if st.button("Salvar nova senha", type="primary"):
+            if not current_password or not new_password or not confirm_password:
+                st.error("Preencha todos os campos de senha.")
+            elif not check_admin_password(current_password):
+                st.error("Senha atual incorreta.")
+            elif new_password != confirm_password:
+                st.error("A confirmação da nova senha não confere.")
+            else:
+                set_admin_password(new_password)
+                st.success("Senha do administrador atualizada com sucesso.")
+
+    with col2:
+        st.info(
+            "A senha é usada apenas para acesso à área administrativa desta "
+            "plataforma. Guarde-a em local seguro."
+        )
+
+
+def show_admin_users_page():
+    st.title("Gerenciar Usuários")
+    st.markdown("---")
+
+    st.subheader("Usuários cadastrados")
+    users = list_users()
+    if users:
+        st.write(", ".join(users))
+    else:
+        st.info("Nenhum usuário cadastrado até o momento.")
+
+    st.markdown("---")
+    st.subheader("Criar novo usuário")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        username = st.text_input("Nome de usuário")
+        password = st.text_input("Senha", type="password")
+        confirm_password = st.text_input("Confirmar senha", type="password")
+
+        if st.button("Criar usuário", type="primary"):
+            if not username or not password or not confirm_password:
+                st.error("Preencha todos os campos.")
+            elif password != confirm_password:
+                st.error("A confirmação da senha não confere.")
+            else:
+                created = create_user(username, password)
+                if not created:
+                    st.error("Não foi possível criar o usuário. Verifique se o nome já existe ou se os dados são válidos.")
+                else:
+                    st.success("Usuário criado com sucesso.")
+                    st.rerun()
+
+    with col2:
+        st.info(
+            "Usuários cadastrados aqui poderão fazer login na opção "
+            "'Login Usuário' e utilizar os templates publicados."
+        )
 
 def render_preview_html(template_path: Path, context: dict) -> str:
     """
