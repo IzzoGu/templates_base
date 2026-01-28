@@ -1,0 +1,10 @@
+{
+  "cliente": "Maria Silva",
+  "cpf": "123.456.789-00",
+  "itens": [
+    { "descricao": "Produto A", "qtd": 2, "preco": 50 },
+    { "descricao": "Produto B", "qtd": 1, "preco": 80 }
+  ],
+  "total": 180
+}
+

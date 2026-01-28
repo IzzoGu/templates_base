@@ -1,0 +1,24 @@
+{
+  "template_-_playbook_(1)": {
+    "filename": "Template - Playbook (1).docx",
+    "description": "",
+    "uploaded_at": "2026-01-12T16:02:01.803482",
+    "fields": [
+      "playbook_id",
+      "rule_name",
+      "severity_level",
+      "rule_description",
+      "analysis_details",
+      "remediation_actions",
+      "preventive_actions",
+      "document_date",
+      "author_name",
+      "approver_name",
+      "client_name",
+      "approval_date"
+    ],
+    "field_count": 12,
+    "has_loops": false,
+    "published": true
+  }
+}

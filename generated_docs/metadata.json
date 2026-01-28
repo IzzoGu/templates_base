@@ -1,0 +1,68 @@
+{
+  "20260112_160719_template_-_playbook_(1)": {
+    "template_id": "template_-_playbook_(1)",
+    "template_name": "Template - Playbook (1).docx",
+    "filename": "FAST-RB.13 - [Linux] - Detects Python Ransomware targets VMWare ESXi server",
+    "internal_filename": "20260112_160719_FAST-RB.13 - [Linux] - Detects Python Ransomware targets VMWare ESXi server.docx",
+    "internal_path": "generated_docs\\internal\\20260112_160719_FAST-RB.13 - [Linux] - Detects Python Ransomware targets VMWare ESXi server.docx",
+    "generated_at": "2026-01-12T16:07:19.904054",
+    "form_data": {
+      "playbook_id": "FAST-RB.13",
+      "rule_name": "[Linux] - Detects Python Ransomware targets VMWare ESXi server",
+      "rule_description": "Essa regra detecta ransomware Python targeting VMware ESXi via Syslog, identificando EXECVE de openssl com rsautil para encrypt usando pubkey.txt em minúsculas, típico de ataques que desligam VMs e criptografam datastores rapidamente.",
+      "severity_level": "Alto",
+      "analysis_details": "•\tVerificar HostName: ESXi hypervisors expostos via SSH/ESXi Shell.\n\n•\tAvaliar SyslogMessage: tolower() com \"execve\", \"openssl\", \"rsautil\", \"-encrypt\", \"-inkey\", \"pubkey.txt\", \"-pubin\", \"-out\".\n\n•\tChecar TimeGenerated: sequências em bursts indicando varredura de datastore.\n\n•\tAnalisar contexto: seguido por vim-cmd shutdowns e inventory em vms.txt.\n\n•\tObservar volume: arquivos encryptados com extensão .fuck sobrescritos.\n\n•\tMapear precedentes: download de script via wget/curl para /tmp.\n",
+      "remediation_actions": "•\tIsolar hypervisor cortando acesso de rede imediatamente.\n\n•\tFinalizar processos openssl/python e deletar artifacts.\n\n•\tBoot em recovery mode para acessar/backup datastores afetados.\n",
+      "preventive_actions": "•\tDesabilitar SSH/ESXi Shell via lockdown mode no vCenter.\n\n•\tConfigurar firewall ESXi restringindo portas 22/902.\n\n•\tImplementar backups 3-2-1 com airgap para datastores.\n",
+      "document_date": "07/01/26",
+      "author_name": "Gustavo",
+      "approver_name": "Kelvin",
+      "client_name": "Protega",
+      "approval_date": "12/01/26"
+    }
+  },
+  "20260119_144948_template_-_playbook_(1)": {
+    "template_id": "template_-_playbook_(1)",
+    "template_name": "Template - Playbook (1).docx",
+    "filename": "Template - Playbook (teste).docx",
+    "internal_filename": "20260119_144948_Template - Playbook (teste).docx",
+    "internal_path": "generated_docs\\internal\\20260119_144948_Template - Playbook (teste).docx",
+    "generated_at": "2026-01-19T14:49:48.861550",
+    "form_data": {
+      "playbook_id": "pb-1234",
+      "rule_name": "teste fe e gu",
+      "rule_description": "teste cheio de amor",
+      "severity_level": "alto",
+      "analysis_details": "teste",
+      "remediation_actions": "teset",
+      "preventive_actions": "teset",
+      "document_date": "tset",
+      "author_name": "fernandinha",
+      "approver_name": "gustavo",
+      "client_name": "caps",
+      "approval_date": "19/01/2026"
+    }
+  },
+  "20260120_115634_template_-_playbook_(1)": {
+    "template_id": "template_-_playbook_(1)",
+    "template_name": "Template - Playbook (1).docx",
+    "filename": "Template - teste123.docx",
+    "internal_filename": "20260120_115634_Template - teste123.docx",
+    "internal_path": "generated_docs\\internal\\20260120_115634_Template - teste123.docx",
+    "generated_at": "2026-01-20T11:56:34.630943",
+    "form_data": {
+      "playbook_id": "teste123",
+      "rule_name": "teste123",
+      "rule_description": "teste123",
+      "severity_level": "teste123",
+      "analysis_details": "teste123",
+      "remediation_actions": "teste123",
+      "preventive_actions": "teste123",
+      "document_date": "vteste123",
+      "author_name": "teste123",
+      "approver_name": "teste123",
+      "client_name": "teste123",
+      "approval_date": "teste123"
+    }
+  }
+}

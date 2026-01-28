@@ -7,6 +7,7 @@ import streamlit as st
 DEFAULT_ADMIN_PASSWORD = "admin123"
 ADMIN_CONFIG_FILE = Path("admin_config.json")
 USERS_CONFIG_FILE = Path("users_config.json")
+LAST_USER_FILE = Path("last_user.json")
 
 
 def _load_admin_config() -> dict:
@@ -79,6 +80,27 @@ def _save_users(users: dict) -> None:
         json.dump(users, f, indent=2, ensure_ascii=False)
 
 
+def _load_last_user() -> str | None:
+    if LAST_USER_FILE.exists():
+        try:
+            with open(LAST_USER_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    return data.get("username")
+        except Exception:
+            return None
+    return None
+
+
+def _save_last_user(username: str | None) -> None:
+    if not username:
+        if LAST_USER_FILE.exists():
+            LAST_USER_FILE.unlink()
+        return
+    with open(LAST_USER_FILE, "w", encoding="utf-8") as f:
+        json.dump({"username": username}, f, indent=2, ensure_ascii=False)
+
+
 def list_users() -> list[str]:
     users = _load_users()
     return sorted(users.keys())
@@ -109,16 +131,27 @@ def authenticate_user(username: str, password: str) -> bool:
 def login_user(username: str, password: str) -> bool:
     if authenticate_user(username, password):
         st.session_state.user = username
+        _save_last_user(username)
         return True
     return False
 
 
 def logout_user() -> None:
     st.session_state.user = None
+    _save_last_user(None)
 
 
 def get_current_user() -> str | None:
-    return st.session_state.get("user")
+    user = st.session_state.get("user")
+    if user:
+        return user
+
+    # Tenta reidratar usuário a partir do último login salvo em disco
+    last = _load_last_user()
+    if last:
+        st.session_state.user = last
+        return last
+    return None
 
 
 def is_user_logged_in() -> bool:
